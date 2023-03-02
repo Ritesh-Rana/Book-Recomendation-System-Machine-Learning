@@ -1,0 +1,42 @@
+import mysql.connector
+import csv
+
+name=[]
+auth=[]
+pub=[]
+isbn=[]
+
+with open('booksdata.csv') as f:
+    data=csv.reader(f, delimiter=';')
+    next(data)
+    for i in data:
+        if len(i[1])>150:
+            name.append(i[1][:150])
+        else:
+            name.append(i[1])
+        if len(i[2])>100:
+            auth.append(i[2][:100])
+        else:
+            auth.append(i[2])
+        pub.append(i[4])
+        if len(i[0])>50:
+            isbn.append(i[0][:50])
+        else:
+            isbn.append(i[0])
+        
+        
+
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="root", 
+    password="password",
+    database="book")
+
+cur = mydb.cursor()
+for i in range(140001,160001):
+    s='''insert into shop_product values(%s,%s,"Null","Null",%s,1,100,
+    "2022-12-01 12:00:00","2022-12-01 12:00:00",%s,8,%s,%s,%s,%s)'''
+    b=(i+1,name[i],100,"im ("+str(i%370)+").jpg",auth[i],pub[i],isbn[i],"im("+str(i%370)+").jpg")
+    cur.execute(s,b)
+mydb.commit()
+
